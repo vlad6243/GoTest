@@ -18,9 +18,9 @@ type employees struct {
 }
 
 type departments struct {
-	deptName      string `db:"dept_name"`
-	countEmployee int    `db:"count_employee"`
-	sumSalary     int    `db:"sum_salary"`
+	deptName       string `db:"dept_name"`
+	countEmployees int    `db:"count_employees"`
+	sumSalary      int    `db:"sum_salary"`
 }
 
 const firstQuery string = `
@@ -52,7 +52,7 @@ const secondQuery string = `
 	`
 const thirdQuery string = `
 	SELECT d.dept_name, 
-	   COUNT(de.emp_no) AS 'count_employee',
+	   COUNT(de.emp_no) AS 'count_employees',
        SUM(s.salary) AS 'sum_salary'
 
 	FROM departments as d
@@ -145,7 +145,7 @@ func findDepartaments(query string, db *sql.DB) {
 
 	for rows.Next() {
 		p := departments{}
-		err := rows.Scan(&p.deptName, &p.countEmployee, &p.sumSalary)
+		err := rows.Scan(&p.deptName, &p.countEmployees, &p.sumSalary)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -156,7 +156,7 @@ func findDepartaments(query string, db *sql.DB) {
 	fmt.Println("---------------------------------------------------------------------")
 	fmt.Println("| Departaments | Count employees| Sum salary |")
 	for _, p := range queryStruct {
-		fmt.Println(p.deptName, p.countEmployee, p.sumSalary)
+		fmt.Println(p.deptName, p.countEmployees, p.sumSalary)
 	}
 	fmt.Println("---------------------------------------------------------------------")
 
