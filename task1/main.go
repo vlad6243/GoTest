@@ -25,11 +25,11 @@ type LongWeekend struct {
 func main() {
 
 	const URLHOLIDAY string = "https://date.nager.at/api/v2/NextPublicHolidays/Ua"
-	const URLWEEKENDS string = "https://date.nager.at/Api/v2/LongWeekend/2020/UA"
+	// const URLWEEKENDS string = "https://date.nager.at/Api/v2/LongWeekend/2020/UA"
 
 	// var holidays = []Holiday{
 	// 	{
-	// 		Date:      "2020-08-22",
+	// 		Date:      "2020-08-24",
 	// 		Name:      "some",
 	// 		LocalName: "something",
 	// 	},
@@ -42,9 +42,11 @@ func main() {
 		fmt.Println(err)
 	}
 
-	if err := json.Unmarshal([]byte(getHoliday(URLWEEKENDS)), &weekends); err != nil {
-		fmt.Println(err)
-	}
+	weekends = getLongWeekends(holidays)
+
+	// if err := json.Unmarshal([]byte(getHoliday(URLWEEKENDS)), &weekends); err != nil {
+	// 	fmt.Println(err)
+	// }
 
 	t := time.Now()
 	if holidays[0].Date == t.Format("2006-01-02") {
@@ -61,7 +63,7 @@ func main() {
 
 			flag = true
 
-			if holidays[0].Date == weekends[i].StartDate {
+			if (holidays[0].Date == weekends[i].StartDate) || (holidays[0].Date == weekends[i].EndDate) {
 
 				flag = false
 
@@ -106,4 +108,61 @@ func getHoliday(url string) string {
 
 	return string(body)
 
+}
+
+func getLongWeekends(holidays []Holiday) []LongWeekend {
+
+	var weekends []LongWeekend
+
+	for i := 0; i < len(holidays); i++ {
+
+		d, _ := time.Parse("2006-01-02", holidays[i].Date)
+
+		if d.Weekday() == 1 {
+
+			newWeekend := LongWeekend{
+				StartDate: d.AddDate(0, 0, -2).Format("2006-01-02"),
+				EndDate:   holidays[i].Date,
+				DayCount:  3,
+			}
+
+			weekends = append(weekends, newWeekend)
+		}
+
+		if d.Weekday() == 2 {
+
+			newWeekend := LongWeekend{
+				StartDate: d.AddDate(0, 0, -3).Format("2006-01-02"),
+				EndDate:   holidays[i].Date,
+				DayCount:  3,
+			}
+
+			weekends = append(weekends, newWeekend)
+		}
+
+		if d.Weekday() == 4 {
+
+			newWeekend := LongWeekend{
+				StartDate: holidays[i].Date,
+				EndDate:   d.AddDate(0, 0, 3).Format("2006-01-02"),
+				DayCount:  4,
+			}
+
+			weekends = append(weekends, newWeekend)
+		}
+
+		if d.Weekday() == 5 {
+
+			newWeekend := LongWeekend{
+				StartDate: holidays[i].Date,
+				EndDate:   d.AddDate(0, 0, 2).Format("2006-01-02"),
+				DayCount:  3,
+			}
+
+			weekends = append(weekends, newWeekend)
+		}
+
+	}
+
+	return weekends
 }
